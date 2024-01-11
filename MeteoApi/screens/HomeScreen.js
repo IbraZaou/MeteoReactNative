@@ -112,7 +112,7 @@ export default function HomeScreen() {
 
                 {/* forecast for next days */}
 
-                <View style={tw`mb-2 py-3`}>
+                <View style={tw`mb-2 flex-0.3 py-3`}>
                     <View style={tw`flex-row items-center mx-5 py-2`}>
                         <CalendarDaysIcon style={tw`h-22 w-22 text-white`} />
                         <Text style={tw`text-white text-base ml-2`}>
@@ -123,16 +123,46 @@ export default function HomeScreen() {
 
                     <ScrollView
                         horizontal
-                        contentContainerStyle={{ paddingHorizontal: 15 }}
-                        showsHorizontalScrollIndicator={false}
-                        //Problème avec le scrollView et la hauteur
-                        style={{ height: 100 }}
+                        contentContainerStyle={{ height: 100, paddingHorizontal: 15 }}
                     >
 
-                        <View style={tw`flex justify-center items-center w-24 rounded-3xl py-3 mt-1 bg-white mr-4`} >
+                        <View style={tw`flex justify-center items-center w-24 rounded-3xl py-3 mt-1 bg-slate-400 mr-4`} >
                             <Image style={tw`w-8 h-8`} source={require('../assets/img/heavyrain.png')} />
+                            <Text style={tw`text-white`}>Lundi</Text>
+                            <Text style={tw`text-white text-xl font-semibold`}>13°</Text>
                         </View>
 
+                        <View style={tw`flex justify-center items-center w-24 rounded-3xl py-3 mt-1 bg-slate-400 mr-4`} >
+                            <Image style={tw`w-8 h-8`} source={require('../assets/img/heavyrain.png')} />
+                            <Text style={tw`text-white`}>Mardi</Text>
+                            <Text style={tw`text-white text-xl font-semibold`}>13°</Text>
+                        </View>
+
+                        <View style={tw`flex justify-center items-center w-24 rounded-3xl py-3 mt-1 bg-slate-400 mr-4`} >
+                            <Image style={tw`w-8 h-8`} source={require('../assets/img/heavyrain.png')} />
+                            <Text style={tw`text-white`}>Mercredi</Text>
+                            <Text style={tw`text-white text-xl font-semibold`}>13°</Text>
+                        </View>
+                        <View style={tw`flex justify-center items-center w-24 rounded-3xl py-3 mt-1 bg-slate-400 mr-4`} >
+                            <Image style={tw`w-8 h-8`} source={require('../assets/img/heavyrain.png')} />
+                            <Text style={tw`text-white`}>Jeudi</Text>
+                            <Text style={tw`text-white text-xl font-semibold`}>13°</Text>
+                        </View>
+                        <View style={tw`flex justify-center items-center w-24 rounded-3xl py-3 mt-1 bg-slate-400 mr-4`} >
+                            <Image style={tw`w-8 h-8`} source={require('../assets/img/heavyrain.png')} />
+                            <Text style={tw`text-white`}>Vendredi</Text>
+                            <Text style={tw`text-white text-xl font-semibold`}>13°</Text>
+                        </View>
+                        <View style={tw`flex justify-center items-center w-24 rounded-3xl py-3 mt-1 bg-slate-400 mr-4`} >
+                            <Image style={tw`w-8 h-8`} source={require('../assets/img/heavyrain.png')} />
+                            <Text style={tw`text-white`}>Samedi</Text>
+                            <Text style={tw`text-white text-xl font-semibold`}>13°</Text>
+                        </View>
+                        <View style={tw`flex justify-center items-center w-24 rounded-3xl py-3 mt-1 bg-slate-400 mr-4`} >
+                            <Image style={tw`w-8 h-8`} source={require('../assets/img/heavyrain.png')} />
+                            <Text style={tw`text-white`}>Dimanche</Text>
+                            <Text style={tw`text-white text-xl font-semibold`}>13°</Text>
+                        </View>
                     </ScrollView>
 
                 </View>
