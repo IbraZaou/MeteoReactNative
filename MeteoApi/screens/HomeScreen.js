@@ -1,21 +1,46 @@
 import { View, Text, Image, SafeAreaView, Touchable, TouchableOpacity, ScrollView } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import tw from 'twrnc';
 import { StatusBar } from "expo-status-bar";
-import { theme } from "../theme";
 import { TextInput } from "react-native";
+import { debounce } from 'lodash';
 
 import { CalendarDaysIcon, MagnifyingGlassIcon } from 'react-native-heroicons/outline'
 import { MapPinIcon } from 'react-native-heroicons/solid'
+import { fetchInfoPrevision, fetchLocations } from "../api/meteo";
+import { weatherImages } from "../constants";
 
 export default function HomeScreen() {
 
     const [showSearch, setShowSearch] = useState(false);
-    const [locations, setLocations] = useState([1, 2, 3])
+    const [locations, setLocations] = useState([]);
+    const [meteo, setMeteo] = useState({});
 
     const handleLocation = (loc) => {
-        console.log(loc);
+        console.log('locations', loc);
+        setLocations([]);
+        setShowSearch(false);
+        fetchInfoPrevision({
+            cityName: loc.name,
+            days: '7'
+        }).then(data => {
+            setMeteo(data);
+            console.log('prévision: ', data);
+        })
     }
+
+
+    const handleSearch = value => {
+        // Fetch locations
+        if (value.length > 2) {
+            fetchLocations({ cityName: value }).then(data => {
+                setLocations(data);
+            })
+        }
+    }
+
+    const handleTextDebounce = useCallback(debounce(handleSearch, 1200, []));
+    const { location, current } = meteo;
 
 
     return (
@@ -26,11 +51,11 @@ export default function HomeScreen() {
             <SafeAreaView style={tw`flex flex-1`}>
                 {/* Search section */}
                 <View style={tw`relative z-50 mt-12`}>
-                    <View style={tw`flex-row justify-end items-center bg-transparent w-75 roundedfull`}>
+                    <View style={tw`flex-row justify-end items-center border border-slate-400 m-auto bg-transparent w-85 roundedfull`}>
 
                         {
                             showSearch ? (
-                                <TextInput placeholderTextColor={'lightgray'} placeholder="Rechercher une ville" style={tw`text-center text-white mx-auto my-2`} />
+                                <TextInput onChangeText={handleTextDebounce} placeholderTextColor={'lightgray'} placeholder="Rechercher une ville" style={tw`text-center text-white mx-auto my-2`} />
 
                             ) : null
                         }
@@ -42,15 +67,15 @@ export default function HomeScreen() {
                     </View>
                     {
                         locations.length > 0 && showSearch ? (
-                            <View style={tw`absolute w-full bg-gray-300 top-16 rounded-3xl`} >
+                            <View style={tw`absolute bg-gray-300 top-16 rounded-3xl left-5 w-85 `} >
                                 {
                                     locations.map((loc, index) => {
                                         let showBorder = index + 1 != locations.length;
                                         let borderClass = showBorder ? tw`border-b-2 border-b-gray-400` : tw``;
                                         return (
-                                            <TouchableOpacity key={index} style={[tw`flex-row items-center border-0 p-3 px-4 mb-1`, borderClass]}>
+                                            <TouchableOpacity onPress={() => handleLocation(loc)} key={index} style={[tw`flex-row items-center border-0 p-3 px-4 mb-1`, borderClass]}>
                                                 <MapPinIcon style={tw`text-black`} />
-                                                <Text style={tw`text-black text-lg ml-2`}>London, United Kingdom </Text>
+                                                <Text style={tw`text-black text-lg ml-2`}>{loc.name} - {loc.country}</Text>
                                             </TouchableOpacity>
                                         )
                                     })
@@ -62,48 +87,52 @@ export default function HomeScreen() {
                 {/* Forecast section */}
                 <View style={tw`mx-4 flex justify-around flex-1 mb-2`}>
                     {/* Location */}
-                    <Text style={tw`text-white text-center text-2xl`}>
-                        London,
-                        <Text style={tw`text-lg font-semibold text-gray-300`}>
-                            United Kingdom
+                    {location ? (
+                        <Text style={tw`text-white text-center text-2xl`}>
+                            {location.name},
+                            <Text style={tw`text-lg font-semibold text-gray-300`}>
+                                {" " + location.country}
+                            </Text>
                         </Text>
-                    </Text>
+                    ) : (
+                        <Text style={tw`text-white text-center text-2xl`}>Loading location...</Text>
+                    )}
 
 
                     <View style={tw`flex-row justify-center`}>
                         {/* Weather image */}
-                        <Image style={tw`w-52 h-52`} source={require('../assets/img/partlycloudy.png')} />
+                        <Image style={tw`w-52 h-52`} source={weatherImages[current?.condition?.text || 'other']} />
                     </View>
 
                     {/* Degres */}
                     <View style={tw`my-2`}>
                         <Text style={tw`text-white text-center font-bold text-6xl ml-5`}>
-                            24°
+                            {current?.temp_c}°
                         </Text>
                         <Text style={tw`text-white text-center font-light text-xl tracking-widest ml-5`}>
-                            partiellement nuageux
+                            {current?.condition?.text}
                         </Text>
                     </View>
                     {/* other stats */}
-                    <View style={tw`flex flex-row justify-between mx-auto w-60`}>
+                    <View style={tw`flex flex-row justify-between mx-auto w-75`}>
                         <View style={tw`flex-row items-center my-2`}>
                             <Image style={tw`w-8 h-8`} source={require('../assets/icons/wind.png')} />
                             <Text style={tw`text-white font-semibold text-base ml-2`} >
-                                22km
+                                {current?.wind_kph}km
                             </Text>
                         </View>
 
                         <View style={tw`flex-row items-center my-2`}>
                             <Image style={tw`w-8 h-8`} source={require('../assets/icons/drop.png')} />
                             <Text style={tw`text-white font-semibold text-base ml-2`} >
-                                17%
+                                {current?.humidity}%
                             </Text>
                         </View>
 
                         <View style={tw`flex-row items-center my-2`}>
                             <Image style={tw`w-8 h-8`} source={require('../assets/icons/sun.png')} />
                             <Text style={tw`text-white font-semibold text-base ml-2`} >
-                                6h00
+                                {meteo?.forecast?.forecastday[0]?.astro?.sunrise}
                             </Text>
                         </View>
                     </View>
